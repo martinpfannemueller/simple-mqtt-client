@@ -26,7 +26,7 @@ module.exports.new = () => new function() {
                                         "\nMQTT_PASSWORD="+mqttPassword,
                                         "\nMQTT_BASE_TOPIC="+mqttBaseTopic);            
                                         
-            this.baseTopic = mqttBaseTopic || "chimpassist/demo"            
+            this.baseTopic = mqttBaseTopic           
             debug("baseTopic:", this.baseTopic)
             
 
@@ -102,7 +102,12 @@ module.exports.new = () => new function() {
         if (!this.isReady()) {
             throw "mqttProvider not yet initiated. Call `init` method with correspondent parameters"
         }
-        const topicToPublish = this.baseTopic + "/" + topic
+        let topicToPublish;
+        if(!this.baseTopic){
+            topicToPublish = topic;
+        }else{
+            topicToPublish = this.baseTopic + "/" + topic;
+        }
         if (typeof(msg) !== "object") {
             throw "Could not publish non-objects to the chat mqtt provider"
         }
@@ -112,8 +117,12 @@ module.exports.new = () => new function() {
         if (!this.isReady()) {
             throw "mqttProvider not yet initiated. Call `init` method with correspondent parameters"
         }
-
-        const topicToSubscribe = this.baseTopic + "/" + topic        
+        let topicToSubscribe;
+        if(!this.baseTopic){
+            topicToSubscribe = topic;
+        }else{
+            topicToSubscribe = this.baseTopic + "/" + topic;
+        }       
         this.manuhBridge.subscribeRemote2LocalTopics([ topicToSubscribe ]); //connect to manuh
         manuh.unsubscribe(topicToSubscribe, subscriptionId) //avoid duplicated subs
         manuh.subscribe(topicToSubscribe, subscriptionId, function(msg, _){            
